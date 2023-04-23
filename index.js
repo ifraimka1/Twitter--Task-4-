@@ -57,9 +57,9 @@ const Post = sequelize.define('Post', {
     }
 });
 
-// 1:1
-Post.belongsTo(User, { foreignKey: 'userID' });
-User.hasOne(Post, { foreignKey: 'userID' });
+// Задание внешнего ключа (соотношение 1:M).
+User.hasMany(Post, { foreignKey: 'userID' }); // У пользователя может быть много постов
+Post.belongsTo(User, { foreignKey: 'userID' }); // Пост принадлежит пользователю
 
 app.get('/', async (req, res) => {
     // const tasks = await Task.findAll();
@@ -101,5 +101,8 @@ app.post('/update', async (req, res) => {
 
     res.redirect('/');
 });
+
+// User.sync({force:true});
+// Post.sync({force:true});
 
 app.listen(port, () => console.log('started'));

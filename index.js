@@ -8,24 +8,58 @@ const port = 3000;
 var { Liquid } = require('liquidjs');
 var engine = new Liquid();
 app.use(bodyParser.urlencoded());
-app.engine('liquid', engine.express()); 
+app.engine('liquid', engine.express());
 app.set('views', './views');            // specify the views directory
 app.set('view engine', 'liquid');       // set liquid to default
 
 
-const sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/postgres');
+const sequelize = new Sequelize('postgres://postgres:Bahfbv!1037@localhost:5432/postgres');
 
-// const Task = sequelize.define('Task', {
-//     name: {
-//       type: DataTypes.STRING,
-//       allowNull: false
-//     },
-//     completed: {
-//       type: DataTypes.BOOLEAN,
-//       allowNull: false,
-//       defaultValue: false
-//     }
-//   });
+const authenticate = async () => {
+    try {
+      await sequelize.authenticate();
+      console.log("Connection has been established successfully.");
+    } catch (error) {
+      console.error("Unable to connect to the database:", error);
+    }
+};
+
+authenticate();
+
+const User = sequelize.define('User', {
+    login: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    isAdmin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    }
+});
+
+const Post = sequelize.define('Post', {
+    userID: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    content: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
+});
+
+// 1:1
+Post.belongsTo(User, { foreignKey: 'userID' });
+User.hasOne(Post, { foreignKey: 'userID' });
 
 app.get('/', async (req, res) => {
     // const tasks = await Task.findAll();
@@ -55,7 +89,7 @@ app.post('/update', async (req, res) => {
     //     task.completed = true;
     //     await task.save();
     // }
-    
+
     // const deletedKeys = Object.keys(req.body)
     //     .filter(x=>x.startsWith('delete_'))
     //     .map(x => x.split('_')[1]);
@@ -67,8 +101,5 @@ app.post('/update', async (req, res) => {
 
     res.redirect('/');
 });
-
-
-//Task.sync();
 
 app.listen(port, () => console.log('started'));

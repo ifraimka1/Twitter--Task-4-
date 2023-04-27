@@ -34,11 +34,12 @@
                 class="button"
                 action="/edit"
                 method="POST">
+                <input type="hidden" name="edit_{{ post.dataValues.id }}">
                 <input
                   type="submit"
-                  name="edit_{{ post.dataValues.id }}"
-                  value="Редактировать"
-                  onclick="edit(this)">
+                  name="{{ post.dataValues.id }}"
+                  onclick="edit(this)"
+                  value="Редактировать">
               </form>
               <form
                 class="button"
@@ -57,7 +58,7 @@
   </body>
   <script>
     function edit(input) {
-      const id = input.name.split('_')[1];
+      const id = input.name;
       const content = document.getElementById(id).innerHTML;
       console.log(content);
       const newContent = prompt('Отредактируйте свое сообщение', content);
